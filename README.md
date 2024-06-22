@@ -1,6 +1,5 @@
 # VkSharp
 Vulkan bindings for C# (with Unity Burst support)
-* For specific SDK version use different branches
 
 ## Features
 * Unity Burst Support: Fully compatible with Unity's Burst compiler for optimized performance.
