@@ -1,0 +1,16 @@
+using System;
+using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
+
+namespace VkSharp
+{
+    [Flags]
+    public enum VkPerformanceCounterDescriptionFlagBitsKHR : uint
+    {
+        VK_PERFORMANCE_COUNTER_DESCRIPTION_PERFORMANCE_IMPACTING_BIT_KHR = (uint)(0x00000001U),
+        VK_PERFORMANCE_COUNTER_DESCRIPTION_CONCURRENTLY_IMPACTED_BIT_KHR = (uint)(0x00000002U),
+        VK_PERFORMANCE_COUNTER_DESCRIPTION_PERFORMANCE_IMPACTING_KHR = (uint)(0x00000001U),
+        VK_PERFORMANCE_COUNTER_DESCRIPTION_CONCURRENTLY_IMPACTED_KHR = (uint)(0x00000002U),
+        VK_PERFORMANCE_COUNTER_DESCRIPTION_FLAG_BITS_MAX_ENUM_KHR = (uint)(0x7FFFFFFFU),
+    }
+}

@@ -1,0 +1,20 @@
+using System;
+using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
+
+namespace VkSharp
+{
+    [Flags]
+    public enum VkExternalFenceHandleTypeFlagBits : uint
+    {
+        VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_FD_BIT = (uint)(0x00000001U),
+        VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_WIN32_BIT = (uint)(0x00000002U),
+        VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT = (uint)(0x00000004U),
+        VK_EXTERNAL_FENCE_HANDLE_TYPE_SYNC_FD_BIT = (uint)(0x00000008U),
+        VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_FD_BIT_KHR = (uint)(0x00000001U),
+        VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_WIN32_BIT_KHR = (uint)(0x00000002U),
+        VK_EXTERNAL_FENCE_HANDLE_TYPE_OPAQUE_WIN32_KMT_BIT_KHR = (uint)(0x00000004U),
+        VK_EXTERNAL_FENCE_HANDLE_TYPE_SYNC_FD_BIT_KHR = (uint)(0x00000008U),
+        VK_EXTERNAL_FENCE_HANDLE_TYPE_FLAG_BITS_MAX_ENUM = (uint)(0x7FFFFFFFU),
+    }
+}

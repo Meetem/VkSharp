@@ -1,0 +1,18 @@
+using System;
+using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
+
+namespace VkSharp
+{
+    public enum VkDeviceFaultAddressTypeEXT
+    {
+        VK_DEVICE_FAULT_ADDRESS_TYPE_NONE_EXT = (int)(0),
+        VK_DEVICE_FAULT_ADDRESS_TYPE_READ_INVALID_EXT = (int)(1),
+        VK_DEVICE_FAULT_ADDRESS_TYPE_WRITE_INVALID_EXT = (int)(2),
+        VK_DEVICE_FAULT_ADDRESS_TYPE_EXECUTE_INVALID_EXT = (int)(3),
+        VK_DEVICE_FAULT_ADDRESS_TYPE_INSTRUCTION_POINTER_UNKNOWN_EXT = (int)(4),
+        VK_DEVICE_FAULT_ADDRESS_TYPE_INSTRUCTION_POINTER_INVALID_EXT = (int)(5),
+        VK_DEVICE_FAULT_ADDRESS_TYPE_INSTRUCTION_POINTER_FAULT_EXT = (int)(6),
+        VK_DEVICE_FAULT_ADDRESS_TYPE_MAX_ENUM_EXT = (int)(2147483647),
+    }
+}

@@ -1,0 +1,19 @@
+using System;
+using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
+
+namespace VkSharp
+{
+    public enum VkValidationFeatureDisableEXT
+    {
+        VK_VALIDATION_FEATURE_DISABLE_ALL_EXT = (int)(0),
+        VK_VALIDATION_FEATURE_DISABLE_SHADERS_EXT = (int)(1),
+        VK_VALIDATION_FEATURE_DISABLE_THREAD_SAFETY_EXT = (int)(2),
+        VK_VALIDATION_FEATURE_DISABLE_API_PARAMETERS_EXT = (int)(3),
+        VK_VALIDATION_FEATURE_DISABLE_OBJECT_LIFETIMES_EXT = (int)(4),
+        VK_VALIDATION_FEATURE_DISABLE_CORE_CHECKS_EXT = (int)(5),
+        VK_VALIDATION_FEATURE_DISABLE_UNIQUE_HANDLES_EXT = (int)(6),
+        VK_VALIDATION_FEATURE_DISABLE_SHADER_VALIDATION_CACHE_EXT = (int)(7),
+        VK_VALIDATION_FEATURE_DISABLE_MAX_ENUM_EXT = (int)(2147483647),
+    }
+}
