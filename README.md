@@ -9,7 +9,7 @@ Vulkan bindings for C# (with Unity Burst support)
 * Flexible Initialization: Easy initialization with VkLoader.Initialize for providing function pointers.
 * Multiple Calling Options: Several options for calling Vulkan functions to suit different preferences and use cases.
 * Reflection Automation: Possibility to automate function loading using reflection.
-
+* Vulkan function callers: `PFN_vk*` structs provide easy abstraction over Vulkan's function pointers. Fully binary compatible. There's also `vk*Delegate` managed delegates if you need. (for instance: to use with MonoPInvokeAttribute when hooking Vulkan in Unity)
 ### Initialization
 
 Call `VkLoader.Initialize(vkGetInstanceProcAddr, vkGetDeviceProcAddr)` (from managed side) to provide function pointers to respective functions.
@@ -74,3 +74,6 @@ Example:
 You might prefer calling functions via globals or via handle, because any other way of passing function pointers might introduce unnecessary indirect load.
 If you manually use `VkFunction.SetFunction(id, ptr)` from managed side, make sure to call `VkLoader.UpdatePointersInBurst()` to sync changes.
 
+## Missing Features
+* You can't load new functions while using Burst just yet or initialize your app under Burst. Not sure if it's even needed.
+* Feel free to file an issue if you want.
