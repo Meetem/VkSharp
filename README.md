@@ -1,5 +1,6 @@
 # VkSharp
 Vulkan bindings for C# (with Unity Burst support)
+Compiled binaries for .NET could be found in `Compiled` directory. Please, don't use them in Unity if you will access Vulkan from Burst.
 
 ## Features
 * Unity Burst Support: Fully compatible with Unity's Burst compiler for optimized performance.
