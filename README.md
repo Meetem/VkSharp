@@ -76,5 +76,5 @@ If you manually use `VkFunction.SetFunction(id, ptr)` from managed side, make su
 
 ## Missing Features
 * You can't load new functions while using Burst just yet or initialize your app under Burst. Not sure if it's even needed.
-* Feel free to file an issue if you want.
 * 32-bit support.
+* Multi-instance / multi-device support. File an issue if you need that.
