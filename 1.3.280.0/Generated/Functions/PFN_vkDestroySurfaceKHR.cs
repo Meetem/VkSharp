@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace VkSharp
 {
+    [VkFunctionStruct(VkFunctionOwner.Instance)]
     [StructLayout(LayoutKind.Sequential, Size = 8, Pack = 8)]
     public unsafe struct PFN_vkDestroySurfaceKHR : IVkFuncPtr
     // Generated function pointer as structure

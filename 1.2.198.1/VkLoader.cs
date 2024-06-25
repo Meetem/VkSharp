@@ -2,14 +2,26 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+
 #if UNITY_2019_1_OR_NEWER
 using Unity.Burst;
+using UnityEngine;
+using AOT;
 #endif
 
 namespace VkSharp
 {
-    public class VkLoader
+#if UNITY_2019_1_OR_NEWER
+    [BurstCompile]
+#endif
+    public static class VkLoader
     {
+        private static class VkLoaderFunctionMapping
+        {
+            internal static Dictionary<string, int> functionIdMapping = new Dictionary<string, int>();
+            internal static int lastFunction = VkFunctions.FunctionCount + 1;
+        }
+        
         /// <summary>
         /// Why is that?
         /// The trick here is to utilize .DAT memory storage in Burst
@@ -23,8 +35,6 @@ namespace VkSharp
         /// </summary>
         private static readonly ulong[] allFunctions = new ulong[VkFunctions.Capacity];
 
-        private static Dictionary<string, int> functionIdMapping = new Dictionary<string, int>();
-
         [ThreadStatic]
         private static byte[] tempString;
         
@@ -36,14 +46,23 @@ namespace VkSharp
             }
         }
 
+        public static int GetFunctionId(string name)
+        {
+            if (!VkLoaderFunctionMapping.functionIdMapping.TryGetValue(name, out var mapping))
+                return -1;
+
+            return mapping;
+        }
+        
+#if UNITY_2019_1_OR_NEWER
+        [BurstDiscard]
+#endif
         public static VkFunctionPointer LoadInstanceFunction(VkInstance instance, string name)
         {
             unsafe
             {
                 VkFunctionPointer procAddr = default;
-                if (!functionIdMapping.TryGetValue(name, out var mappedId))
-                    mappedId = -1;
-                
+                var mappedId = GetFunctionId(name);
                 if (mappedId != -1)
                 {
                     procAddr = new VkFunctionPointer(GetFunction(mappedId));
@@ -63,31 +82,39 @@ namespace VkSharp
                 fixed (byte* b = tempString)
                 {
                     procAddr = GetFunctions().vkGetInstanceProcAddr.Call(instance, b);
+                    //Debug.Log($"Resolved {procAddr} for {name} ({mappedId})");
                 }
 
                 if (procAddr.Pointer != null)
                 {
-                    if (mappedId != -1)
+                    if (mappedId == -1)
                     {
-                        SetFunction(mappedId, procAddr);
-                        UpdatePointersSingleValueInBurst(mappedId);
+                        mappedId = VkLoaderFunctionMapping.lastFunction;
+                        VkLoaderFunctionMapping.functionIdMapping[name] = mappedId;
+                        VkLoaderFunctionMapping.lastFunction++;
                     }
+                
+                    SetFunction(mappedId, procAddr);
+                    UpdatePointersSingleValueInBurst(mappedId);
                 }
 
                 return procAddr;
             }
         }
 
+#if UNITY_2019_1_OR_NEWER
+        [BurstDiscard]
+#endif
         public static VkFunctionPointer LoadDeviceFunction(VkDevice device, string name)
         {
             unsafe
             {
                 VkFunctionPointer procAddr = default;
-                if (!functionIdMapping.TryGetValue(name, out var mappedId))
-                    mappedId = -1;
+                var mappedId = GetFunctionId(name);
                 
                 if (mappedId != -1)
                 {
+                    //Debug.LogWarning($"Found mapping for {name} {mappedId}");
                     procAddr = new VkFunctionPointer(GetFunction(mappedId));
                     if (procAddr.Pointer != null)
                         return procAddr;
@@ -109,17 +136,25 @@ namespace VkSharp
 
                 if (procAddr.Pointer != null)
                 {
-                    if (mappedId != -1)
+                    if (mappedId == -1)
                     {
-                        SetFunction(mappedId, procAddr);
-                        UpdatePointersSingleValueInBurst(mappedId);
+                        mappedId = VkLoaderFunctionMapping.lastFunction;
+                        VkLoaderFunctionMapping.functionIdMapping[name] = mappedId;
+                        VkLoaderFunctionMapping.lastFunction++;
                     }
+                
+                    //Debug.Log($"Resolved {procAddr} for {name} ({mappedId})");
+                    SetFunction(mappedId, procAddr);
+                    UpdatePointersSingleValueInBurst(mappedId);
                 }
 
                 return procAddr;
             }
         }
         
+#if UNITY_2019_1_OR_NEWER
+        [BurstDiscard]
+#endif
         public static T LoadDeviceFunction<T>(VkDevice device)
             where T: unmanaged, IVkFuncPtr
         {
@@ -131,6 +166,9 @@ namespace VkSharp
             }
         }
         
+#if UNITY_2019_1_OR_NEWER
+        [BurstDiscard]
+#endif
         public static T LoadInstanceFunction<T>(VkInstance instance)
             where T: unmanaged, IVkFuncPtr
         {
@@ -144,9 +182,10 @@ namespace VkSharp
 
         private static void MakeFunctionMapping()
         {
-            foreach (var field in typeof(VkFunctions).GetFields(BindingFlags.Public))
+            foreach (var field in typeof(VkFunctions).GetFields(BindingFlags.Public | BindingFlags.Instance))
             {
                 var idAttribute = field.GetCustomAttribute<VkFunctionIdAttribute>();
+                //Debug.Log($"Field {field}, attrib: {idAttribute}");
                 if (idAttribute == null)
                     return;
 
@@ -155,13 +194,15 @@ namespace VkSharp
                 if (funcName.StartsWith("PFN_aux", StringComparison.Ordinal))
                     continue;
 
-                functionIdMapping[funcName] = id;
+                //Debug.Log($"Building function mapping {funcName} = {id}");
+                VkLoaderFunctionMapping.functionIdMapping[funcName] = id;
             }
         }
 
 #if UNITY_2019_1_OR_NEWER
         public static unsafe ulong* BurstFunctionsAddresses = null;
-        
+        private unsafe delegate void retrieveBurstPointerDelegate(ref ulong *writePointerTo);
+            
         [BurstDiscard]
         private static void SetManaged(ref int isManaged){
             isManaged = 1;
@@ -188,6 +229,7 @@ namespace VkSharp
         }
 
         [BurstCompile]
+        [MonoPInvokeCallback(typeof(retrieveBurstPointerDelegate))]
         private static unsafe void RetriveBurstPointer(ref ulong *writePointerTo)
         {
             #if ENABLE_BURST_AOT
@@ -240,6 +282,7 @@ namespace VkSharp
                 return;
 
             var managed = GetFunctionsStorageManaged();
+            Debug.Log($"Updating burst, {((ulong)BurstFunctionsAddresses):X16}, {((ulong)managed):X16}");
             BurstFunctionsAddresses[id] = managed[id];
         }
 
@@ -260,17 +303,6 @@ namespace VkSharp
             return VkUnsafe.RefToPtr(ref allFunctions[0]);
         }
 #else
-        // No-op
-        public static unsafe void UpdatePointersInBurst()
-        {
-        }
-
-        // No-op
-        private static unsafe void UpdatePointersSingleValueInBurst(int id)
-        {
-            
-        }
-        
         public static unsafe void Initialize(PFN_vkGetInstanceProcAddr instance, PFN_vkGetDeviceProcAddr device)
         {
             SetFunction(VkFunctions.vkGetDeviceProcAddrId, device);
@@ -281,6 +313,11 @@ namespace VkSharp
         public static unsafe ulong* GetFunctionsStorageManaged()
         {
             return VkUnsafe.RefToPtr(ref allFunctions[0]);
+        }
+
+        // No-op on ordinary dotnet
+        private static unsafe void UpdatePointersSingleValueInBurst(int id)
+        {
         }
 #endif
         

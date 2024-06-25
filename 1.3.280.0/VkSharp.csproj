@@ -17,4 +17,18 @@
       <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="Compiled\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="Compiled\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Compiled\**" />
+      <None Remove="build.bat" />
+      <None Remove="compile.log" />
+    </ItemGroup>
+
 </Project>

@@ -42,6 +42,13 @@ namespace VkSharp
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe ref T NullRef<T>()
+            where T : unmanaged
+        {
+            return ref PtrToRef<T>(null);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe bool IsNullRef<T>(ref T s)
             where T : unmanaged
         {

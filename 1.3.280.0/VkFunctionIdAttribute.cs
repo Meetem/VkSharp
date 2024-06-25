@@ -7,11 +7,13 @@ namespace VkSharp
     {
         public int Id { get; set; }
         public bool IsResolvable { get; set; }
+        public VkFunctionOwner Owner { get; set; }
 
-        public VkFunctionIdAttribute(int id, bool isResolvable = true)
+        public VkFunctionIdAttribute(int id, bool isResolvable, VkFunctionOwner owner)
         {
             Id = id;
             IsResolvable = isResolvable;
+            Owner = owner;
         }
     }
 }
