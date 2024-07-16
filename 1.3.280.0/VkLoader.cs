@@ -282,7 +282,7 @@ namespace VkSharp
                 return;
 
             var managed = GetFunctionsStorageManaged();
-            Debug.Log($"Updating burst, {((ulong)BurstFunctionsAddresses):X16}, {((ulong)managed):X16}");
+            //Debug.Log($"Updating burst, {((ulong)BurstFunctionsAddresses):X16}, {((ulong)managed):X16}");
             BurstFunctionsAddresses[id] = managed[id];
         }
 
